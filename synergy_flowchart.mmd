@@ -1,0 +1,51 @@
+graph TD
+    %% --- Nodes ---
+
+    subgraph Target ["The Target (Estimates)"]
+        direction TB
+        Excel[Excel Upload] -->|Import| DB_Est[("estimates table<br/>(total_amount)")]
+        DB_Est --> Budget["Project Budget<br/>(Card 1)"]
+    end
+
+    subgraph OutLabor ["Money OUT (Labor)"]
+        direction TB
+        DB_Att[("attendance table")] -->|Sum: daily_wage + overtime| LaborCost["Labor Cost"]
+    end
+
+    subgraph OutMat ["Money OUT (Materials)"]
+        direction TB
+        DB_Exp[("expenses table")] -->|Sum: Bill Amounts| MatCost["Material Cost"]
+    end
+
+    subgraph InRev ["Money IN (Revenue)"]
+        direction TB
+        DB_Ledger[("client_ledger table")] -->|Sum: payment_received| Received["Total Received"]
+    end
+
+    %% --- The Synergy (Calculations) ---
+
+    %% Total Spent
+    LaborCost & MatCost --> TotalSpent{"Total Spent<br/>(Labor + Materials)"}
+
+    %% Profit Calculation
+    Budget --> ProfitCalc((Profit Calc))
+    TotalSpent --> ProfitCalc
+    ProfitCalc -->|Subtract| NetProfit["Net Projected Profit"]
+
+    %% Cashflow Calculation
+    Received --> CashCalc((Cashflow Calc))
+    TotalSpent --> CashCalc
+    CashCalc -->|Subtract| CashHand["Cash in Hand<br/>(Cashflow Status)"]
+
+    %% --- Styling ---
+    classDef db fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef card fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    classDef calc fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef final fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px,font-weight:bold;
+
+    class DB_Est,DB_Att,DB_Exp,DB_Ledger db;
+    class Budget,LaborCost,MatCost,Received card;
+    class TotalSpent,ProfitCalc,CashCalc calc;
+    class NetProfit,CashHand final;
+
+    linkStyle default stroke:#333,stroke-width:1.5px;

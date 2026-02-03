@@ -1,0 +1,116 @@
+﻿
+> jaguar-fitness-web@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.1.5 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 3.0s
+  Running TypeScript ...
+node.exe : Failed to 
+compile.
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (Failed    
+ to compile.:Stri    
+ng) [], RemoteEx    
+ception
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+
+./src/app/page.tsx:97
+:57
+Type error: No 
+overload matches 
+this call.
+  Overload 1 of 3, 
+'(locales?: 
+LocalesArgument, 
+options?: DateTimeFor
+matOptions | 
+undefined): string', 
+gave the following 
+error.
+    Type '"medium"' 
+is not assignable to 
+type '"numeric" | 
+"2-digit" | "long" | 
+"short" | "narrow" | 
+undefined'.
+  Overload 2 of 3, 
+'(locales?: string | 
+string[] | 
+undefined, options?: 
+DateTimeFormatOptions
+ | undefined): 
+string', gave the 
+following error.
+    Type '"medium"' 
+is not assignable to 
+type '"numeric" | 
+"2-digit" | "long" | 
+"short" | "narrow" | 
+undefined'.
+
+[0m [90m  95 
+|[39m               
+                     
+                 
+{[36mnew[39m [33mD
+ate[39m(member[33m.
+[39mjoining_date)[3
+3m.[39mtoLocaleDateS
+tring([32m'en-US'[3
+9m[33m,[39m {
+ [90m  96 |[39m    
+                     
+                     
+           
+year[33m:[39m [32m
+'numeric'[39m[33m,
+[39m
+[31m[1m>[22m[39m
+[90m  97 |[39m      
+                     
+                     
+         
+month[33m:[39m [32
+m'medium'[39m[33m,
+[39m
+ [90m     |[39m    
+                     
+                     
+           
+[31m[1m^[22m[39m
+ [90m  98 |[39m    
+                     
+                     
+           
+day[33m:[39m 
+[32m'numeric'[39m
+ [90m  99 |[39m    
+                     
+                     
+       })}
+ [90m 100 |[39m    
+                     
+                     
+   [33m<[39m[33m/
+[39m[33mtd[39m[33m
+>[39m[0m
+Next.js build worker 
+exited with code: 1 
+and signal: null
