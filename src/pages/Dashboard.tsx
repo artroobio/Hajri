@@ -8,6 +8,8 @@ import StatusDropdown from '@/components/attendance/StatusDropdown'
 import KharchiInput from '@/components/attendance/KharchiInput'
 import { Worker, AttendanceRecord } from '@/types'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+import MagicEntry from '@/components/MagicEntry'
+import ExportButton from '@/components/ExportButton'
 
 export default function Dashboard() {
     const [selectedDate, setSelectedDate] = useState(new Date())
@@ -71,7 +73,7 @@ export default function Dashboard() {
                 supabase.from('attendance').select('*').eq('date', dateStr),
 
                 // 3. Estimates (Budget)
-                supabase.from('estimates').select('name, estimate_items(amount)').eq('is_active', true).single(),
+                supabase.from('estimates').select('name, estimate_items(amount)'), // Fetch all estimates
 
                 // 4. All Attendance (For Global Labor Cost & Monthly Labor Cost)
                 supabase.from('attendance').select('worker_id, hajri_count, date'),
@@ -101,8 +103,20 @@ export default function Dashboard() {
             let totalBudget = 0
             let activeProjectName = null
             if (estimatesRes.data) {
-                activeProjectName = estimatesRes.data.name
-                totalBudget = (estimatesRes.data.estimate_items as any[]).reduce((sum, item) => sum + (item.amount || 0), 0)
+                const allEstimates = estimatesRes.data as any[]
+                if (allEstimates.length > 0) {
+                    // Use the first estimate's name or a generic label if multiple
+                    activeProjectName = allEstimates[0].name
+                }
+
+                // Sum from ALL estimates
+                totalBudget = allEstimates.reduce((acc, est) => {
+                    const items = est.estimate_items
+                    if (!Array.isArray(items)) return acc
+
+                    const estTotal = items.reduce((sum: number, item: any) => sum + (item.amount || 0), 0)
+                    return acc + estTotal
+                }, 0)
             }
 
             // -- Process Aggregated Labor Cost (Global & Monthly) --
@@ -307,6 +321,9 @@ export default function Dashboard() {
         <div className="space-y-8 pb-20">
             {/* --- MASTER FINANCIAL SYNERGY DASHBOARD (2x2 Grid) --- */}
             <div>
+                {/* AI MAGIC ENTRY */}
+                <MagicEntry workers={workers} onSuccess={fetchData} />
+
                 <div className="flex items-center justify-between mb-4">
                     <div>
                         <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Financial Health</h2>
@@ -465,26 +482,47 @@ export default function Dashboard() {
                     </button>
                 </div>
 
-                {/* Skill Tabs */}
-                <div className="flex justify-center gap-4 mb-6">
-                    <button
-                        onClick={() => setActiveTab('Laborer')}
-                        className={`px-8 py-3 rounded-xl font-bold text-lg transition-all shadow-sm ${activeTab === 'Laborer'
-                            ? 'bg-blue-600 text-white shadow-blue-200'
-                            : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-                            }`}
-                    >
-                        Labour (Bigari)
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('Mason')}
-                        className={`px-8 py-3 rounded-xl font-bold text-lg transition-all shadow-sm ${activeTab === 'Mason'
-                            ? 'bg-blue-600 text-white shadow-blue-200'
-                            : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-                            }`}
-                    >
-                        Mason (Mistry)
-                    </button>
+                {/* Skill Tabs & Export */}
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                    <div className="flex justify-center gap-4">
+                        <button
+                            onClick={() => setActiveTab('Laborer')}
+                            className={`px-8 py-3 rounded-xl font-bold text-lg transition-all shadow-sm ${activeTab === 'Laborer'
+                                ? 'bg-blue-600 text-white shadow-blue-200'
+                                : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
+                                }`}
+                        >
+                            Labour (Bigari)
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('Mason')}
+                            className={`px-8 py-3 rounded-xl font-bold text-lg transition-all shadow-sm ${activeTab === 'Mason'
+                                ? 'bg-blue-600 text-white shadow-blue-200'
+                                : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
+                                }`}
+                        >
+                            Mason (Mistry)
+                        </button>
+                    </div>
+
+                    <ExportButton
+                        data={workers
+                            .filter(w => w.skill_type === activeTab)
+                            .map(worker => {
+                                const record = attendanceMap[worker.id]
+                                return {
+                                    Date: dateStr,
+                                    Name: worker.full_name,
+                                    Type: worker.skill_type,
+                                    Status: record?.status || (record?.hajri_count ? 'Present' : 'Absent'),
+                                    Hajri: record?.hajri_count ?? 0,
+                                    Kharchi: record?.kharchi_amount ?? 0,
+                                    Wage: worker.daily_wage
+                                }
+                            })
+                        }
+                        fileName={`Attendance_${activeTab}_${dateStr}`}
+                    />
                 </div>
 
                 {/* Operations Table */}

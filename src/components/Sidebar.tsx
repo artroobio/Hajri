@@ -67,6 +67,7 @@ export default function Sidebar() {
     const navItems = [
         { name: 'Site Overview', path: '/', icon: Activity },
         { name: 'Workers', path: '/workers', icon: Users },
+        { name: 'Project Info', path: '/project-details', icon: Settings }, // Updated
         { name: 'Daily Entry', path: '/daily-entry', icon: Calendar },
         { name: 'Estimates / BOQ', path: '/estimates', icon: FileText },
         { name: 'Bills & Payments', path: '/client-ledger', icon: IndianRupee },

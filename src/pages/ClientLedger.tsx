@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/utils/supabase/client'
 import { Plus, Download, FileText, IndianRupee, Trash2, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
+import ExportButton from '@/components/ExportButton'
 
 interface LedgerEntry {
     id: string
@@ -121,9 +122,21 @@ export default function ClientLedger() {
 
     return (
         <div className="space-y-6 pb-32"> {/* Increased padding for sticky footer */}
-            <header>
-                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Client Billing & Payments</h1>
-                <p className="text-slate-500 mt-1">Track project billing, payments received, and net outstanding balance.</p>
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Client Billing & Payments</h1>
+                    <p className="text-slate-500 mt-1">Track project billing, payments received, and net outstanding balance.</p>
+                </div>
+                <ExportButton
+                    data={processedData.map(entry => ({
+                        Date: format(new Date(entry.date), 'dd MMM yyyy'),
+                        Description: entry.description,
+                        'Bill Amount': entry.bill_amount,
+                        'Received': entry.payment_received,
+                        'Balance': entry.runningBalance
+                    }))}
+                    fileName={`Client_Ledger_${format(new Date(), 'yyyy-MM-dd')}`}
+                />
             </header>
 
             {/* INPUT FORM */}

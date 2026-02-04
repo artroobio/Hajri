@@ -19,6 +19,7 @@ import BalancePayments from './pages/BalancePayments'
 import Estimates from './pages/Estimates'
 import Materials from './pages/Materials'
 import ClientLedger from './pages/ClientLedger'
+import ProjectDetails from './pages/ProjectDetails'
 
 function App() {
     return (
@@ -46,6 +47,7 @@ function App() {
                             <Route path="expenses" element={<Expenses />} />
                             <Route path="reports" element={<Reports />} />
                             <Route path="settings" element={<Settings />} />
+                            <Route path="project-details" element={<ProjectDetails />} />
                             <Route path="payroll/balances" element={<BalancePayments />} />
                         </Route>
                     </Routes>

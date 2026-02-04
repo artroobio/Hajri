@@ -38,3 +38,5 @@ supabase/.temp
 
 # Ignore the backup folder
 _LEGACY_NEXTJS_APP/
+
+.env

@@ -51,19 +51,19 @@ export default function Settings() {
             }
 
             // 2. Load Project Settings
-            const { data: gymData } = await supabase
-                .from('gym_settings')
+            const { data: projectData } = await supabase
+                .from('project_settings')
                 .select('*')
                 .limit(1)
                 .single()
 
-            if (gymData) {
+            if (projectData) {
                 setSettings({
-                    id: gymData.id,
-                    gym_name: gymData.gym_name || '',
-                    address: gymData.address || '',
-                    phone: gymData.phone || '',
-                    receipt_footer: gymData.receipt_footer || ''
+                    id: projectData.id,
+                    gym_name: projectData.project_name || '', // Mapping project_name to our local state which is still gym_name for now
+                    address: projectData.address || '',
+                    phone: projectData.phone || '',
+                    receipt_footer: projectData.receipt_footer || ''
                 })
             }
         } catch (error) {
@@ -89,15 +89,15 @@ export default function Settings() {
         }
     }
 
-    const handleSaveGymSettings = async (e: React.FormEvent) => {
+    const handleSaveProjectSettings = async (e: React.FormEvent) => {
         e.preventDefault()
         setSaving(true)
         try {
             const { error } = await supabase
-                .from('gym_settings')
+                .from('project_settings')
                 .upsert({
                     id: settings.id || undefined,
-                    gym_name: settings.gym_name,
+                    project_name: settings.gym_name,
                     address: settings.address,
                     phone: settings.phone,
                     receipt_footer: settings.receipt_footer,
@@ -121,11 +121,11 @@ export default function Settings() {
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string | null) => void) => {
         const file = e.target.files?.[0]
         if (!file) {
-            console.log('No file selected')
+
             return
         }
 
-        console.log('File selected:', file.name, 'Size:', file.size, 'Type:', file.type)
+
 
         // Validate file type
         if (!file.type.startsWith('image/')) {
@@ -365,7 +365,7 @@ export default function Settings() {
                     <Building className="w-5 h-5 text-gray-400" />
                     <h2 className="text-lg font-bold text-gray-900">Business Details (For Invoices)</h2>
                 </div>
-                <form onSubmit={handleSaveGymSettings} className="p-6 space-y-4">
+                <form onSubmit={handleSaveProjectSettings} className="p-6 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Project / Company Name</label>

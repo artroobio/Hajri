@@ -1,1 +1,6 @@
+# Cloudflare Redirects
+# Proxy OpenAI API calls to bypass CORS in production
+/api/openai/* https://api.openai.com/v1/:splat 200
+
+# SPA Catch-all (Must be last)
 /* /index.html 200

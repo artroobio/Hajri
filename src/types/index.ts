@@ -70,3 +70,21 @@ export interface Expense {
     date: string
     created_at: string
 }
+
+export interface Project {
+    id: string
+    name?: string
+    client_name?: string
+    site_address?: string
+    gst_number?: string
+    phone?: string
+    project_start_date?: string
+    architect_name?: string
+    engineer_name?: string
+    construction_types?: string[]
+    project_team?: {
+        name: string
+        role: string
+    }[]
+    created_at?: string
+}
