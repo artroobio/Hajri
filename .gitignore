@@ -40,3 +40,5 @@ supabase/.temp
 _LEGACY_NEXTJS_APP/
 
 .env
+
+dist
