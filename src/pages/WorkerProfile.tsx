@@ -60,8 +60,8 @@ export default function WorkerProfile() {
     const summary = useMemo(() => {
         if (!worker) return { totalHajris: 0, totalKharchi: 0, netPayable: 0 }
 
-        const totalHajris = attendance.reduce((sum, record) => sum + record.hajri_count, 0)
-        const totalKharchi = attendance.reduce((sum, record) => sum + record.kharchi_amount, 0)
+        const totalHajris = attendance.reduce((sum: number, record) => sum + record.hajri_count, 0)
+        const totalKharchi = attendance.reduce((sum: number, record) => sum + (record.kharchi_amount || 0), 0)
         const netPayable = (totalHajris * worker.daily_wage) - totalKharchi
 
         return { totalHajris, totalKharchi, netPayable }

@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { supabase } from '@/utils/supabase/client'
 import { X } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface AddExpenseModalProps {
     isOpen: boolean
@@ -42,10 +43,10 @@ export default function AddExpenseModal({ isOpen, onClose, onSuccess }: AddExpen
             setExpenseDate(new Date().toISOString().split('T')[0])
             onSuccess()
             onClose()
-            setTimeout(() => alert('Expense recorded successfully!'), 100)
+            toast.success('Expense recorded successfully!')
         } catch (error) {
             console.error('Error recording expense:', error)
-            alert('Failed to record expense: ' + (error as any).message)
+            toast.error('Failed to record expense: ' + (error as any).message)
         } finally {
             setLoading(false)
         }

@@ -4,6 +4,7 @@ import { supabase } from '@/utils/supabase/client'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '@/context/ThemeContext'
 import { LogOut, Save, User, Building, Palette, Upload, Trash2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 export default function Settings() {
     const navigate = useNavigate()
@@ -81,9 +82,9 @@ export default function Settings() {
                 data: { full_name: profile.full_name }
             })
             if (error) throw error
-            alert('Profile updated successfully!')
+            toast.success('Profile updated successfully!')
         } catch (error: any) {
-            alert('Error updating profile: ' + error.message)
+            toast.error(error.message || 'Error updating profile')
         } finally {
             setSaving(false)
         }
@@ -105,9 +106,9 @@ export default function Settings() {
                 })
 
             if (error) throw error
-            alert('Project settings saved!')
+            toast.success('Project settings saved!')
         } catch (error: any) {
-            alert('Error saving settings: ' + error.message)
+            toast.error(error.message || 'Error saving settings')
         } finally {
             setSaving(false)
         }
@@ -129,13 +130,13 @@ export default function Settings() {
 
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            alert('Please select an image file')
+            toast.error('Please select an image file')
             e.target.value = '' // Reset input
             return
         }
 
         if (file.size > 3 * 1024 * 1024) {
-            alert('File is too large (Max 3MB)')
+            toast.error('File is too large (Max 3MB)')
             e.target.value = '' // Reset input
             return
         }
@@ -144,21 +145,16 @@ export default function Settings() {
         const reader = new FileReader()
         reader.onloadend = () => {
             const dataUrl = reader.result as string
-            console.log('Image loaded successfully, data URL length:', dataUrl.length)
-            console.log('Data URL preview:', dataUrl.substring(0, 100) + '...')
-            console.log('Calling setter function...')
             setter(dataUrl)
-            console.log('Setter called successfully')
             setUploading(false)
             e.target.value = '' // Reset input so same file can be selected again
         }
         reader.onerror = (error) => {
             console.error('Error reading file:', error)
-            alert('Failed to read image file. Please try again.')
+            toast.error('Failed to read image file. Please try again.')
             setUploading(false)
             e.target.value = '' // Reset input
         }
-        console.log('Starting to read file as data URL...')
         reader.readAsDataURL(file)
     }
 

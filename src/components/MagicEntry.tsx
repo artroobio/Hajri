@@ -4,6 +4,7 @@ import { parseWorkerCommand, parseExpenseCommand, ParsedAttendance, ParsedExpens
 import { Worker } from '@/types';
 import { supabase } from '@/utils/supabase/client';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 
 interface MagicEntryProps {
     workers: Worker[];
@@ -113,7 +114,7 @@ export default function MagicEntry({ workers, onSuccess }: MagicEntryProps) {
                         await supabase.from('attendance').insert(payload);
                     }
                 }
-                alert(`Successfully saved ${validRecords.length} attendance records!`);
+                toast.success(`Successfully saved ${validRecords.length} attendance records!`);
 
             } else {
                 // Save Expenses
@@ -132,7 +133,7 @@ export default function MagicEntry({ workers, onSuccess }: MagicEntryProps) {
                 const { error } = await supabase.from('expenses').insert(records);
                 if (error) throw error;
 
-                alert(`Successfully saved ${records.length} expense records!`);
+                toast.success(`Successfully saved ${records.length} expense records!`);
             }
 
             // Cleanup

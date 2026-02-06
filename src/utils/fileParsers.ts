@@ -13,7 +13,12 @@ export async function extractTextFromPdf(file: File): Promise<string> {
     for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item: any) => item.str).join(' ');
+        const pageText = textContent.items.map((item) => {
+            if ('str' in item) {
+                return item.str;
+            }
+            return '';
+        }).join(' ');
         fullText += `--- Page ${i} ---\n${pageText}\n`;
     }
     return fullText;
@@ -32,6 +37,7 @@ export async function extractTextFromExcel(file: File): Promise<string> {
 
     wb.SheetNames.forEach(sheetName => {
         const ws = wb.Sheets[sheetName];
+        if (!ws) return; // Skip if worksheet is undefined
         // Convert to CSV for structure
         const csv = XLSX.utils.sheet_to_csv(ws);
         fullText += `--- Sheet: ${sheetName} ---\n${csv}\n`;

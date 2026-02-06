@@ -4,6 +4,7 @@ import { MaterialType, Expense } from '@/types'
 import { Plus, X, Camera, Upload, Coins, ClipboardList, Clock, BrickWall, Hammer, PaintBucket, Box, Shovel, Info, Trash2 } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 import { format } from 'date-fns'
+import toast from 'react-hot-toast'
 
 // Helper to get icon based on name (simple heuristic)
 const getMaterialIcon = (name: string) => {
@@ -69,7 +70,7 @@ export default function Materials() {
             setRecentExpenses(prev => prev.filter(e => e.id !== id))
         } catch (error) {
             console.error('Error deleting bill:', error)
-            alert('Failed to delete bill')
+            toast.error('Failed to delete bill')
         } finally {
             setLoading(false)
         }
@@ -95,7 +96,7 @@ export default function Materials() {
 
     const handleSaveBill = async () => {
         if (!selectedMaterial || !amount) {
-            alert('Please enter amount')
+            toast.error('Please enter amount')
             return
         }
 
@@ -139,7 +140,7 @@ export default function Materials() {
 
         } catch (error: any) {
             console.error(error)
-            alert('Failed to save bill')
+            toast.error('Failed to save bill')
         } finally {
             setLoading(false)
         }
@@ -155,7 +156,7 @@ export default function Materials() {
             setShowAddMaterialModal(false)
             fetchData()
         } catch (error) {
-            alert('Failed to create material')
+            toast.error('Failed to create material')
         } finally {
             setLoading(false)
         }
@@ -210,7 +211,6 @@ export default function Materials() {
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-lg bg-slate-100 flex-shrink-0 flex items-center justify-center overflow-hidden border border-slate-200">
                                         {(exp as any).photo_url ? (
-                                            /* eslint-disable-next-line @next/next/no-img-element */
                                             <img src={(exp as any).photo_url} alt="Bill" className="w-full h-full object-cover" />
                                         ) : (
                                             <ClipboardList size={20} className="text-slate-400" />

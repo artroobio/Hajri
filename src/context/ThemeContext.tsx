@@ -34,22 +34,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     // Wrapped setters with logging - using useCallback for stability
     const setBrandName = useCallback((name: string) => {
-        console.log('ThemeContext: setBrandName called with:', name);
         _setBrandName(name);
     }, []);
 
     const setBrandLogo = useCallback((logo: string | null) => {
-        console.log('ThemeContext: setBrandLogo called with:', logo ? `${logo.substring(0, 50)}...` : 'null');
         _setBrandLogo(logo);
     }, []);
 
     const setBgType = useCallback((type: 'default' | 'custom' | 'white') => {
-        console.log('ThemeContext: setBgType called with:', type);
         _setBgType(type);
     }, []);
 
     const setBackgroundImage = useCallback((image: string | null) => {
-        console.log('ThemeContext: setBackgroundImage called with:', image ? `${image.substring(0, 50)}...` : 'null');
         _setBackgroundImage(image);
     }, []);
 
@@ -70,7 +66,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // Save to LocalStorage on change
     useEffect(() => {
         if (!mounted) return;
-        console.log('ThemeContext: Saving to localStorage...', { brandName, brandLogo: brandLogo ? 'set' : 'null', bgType, backgroundImage: backgroundImage ? 'set' : 'null' });
         localStorage.setItem('brandName', brandName);
         if (brandLogo) localStorage.setItem('brandLogo', brandLogo);
         else localStorage.removeItem('brandLogo');

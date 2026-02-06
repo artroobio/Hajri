@@ -1,6 +1,9 @@
 
+
 import { useState } from 'react'
 import { supabase } from '@/utils/supabase/client'
+import { useProject } from '@/context/ProjectContext'
+import toast from 'react-hot-toast'
 
 interface AddMemberModalProps {
     isOpen: boolean
@@ -9,6 +12,7 @@ interface AddMemberModalProps {
 }
 
 export default function AddMemberModal({ isOpen, onClose, onSuccess }: AddMemberModalProps) {
+    const { selectedProjectId } = useProject()
     const [name, setName] = useState('')
     const [phone, setPhone] = useState('')
     const [skillType, setSkillType] = useState('Helper')
@@ -17,6 +21,13 @@ export default function AddMemberModal({ isOpen, onClose, onSuccess }: AddMember
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        // Validation: require a project to be selected
+        if (!selectedProjectId) {
+            toast.error('Please select a project from the dashboard before adding workers')
+            return
+        }
+
         setLoading(true)
 
         try {
@@ -26,7 +37,8 @@ export default function AddMemberModal({ isOpen, onClose, onSuccess }: AddMember
                     name,
                     phone: phone || null,
                     skill_type: skillType,
-                    daily_wage: dailyWage ? parseFloat(dailyWage) : 0
+                    daily_wage: dailyWage ? parseFloat(dailyWage) : 0,
+                    project_id: selectedProjectId
                 }])
 
             if (error) throw error
@@ -40,7 +52,7 @@ export default function AddMemberModal({ isOpen, onClose, onSuccess }: AddMember
             onClose()
         } catch (error: any) {
             console.error('Error adding worker:', error)
-            alert('Failed to add worker: ' + error.message)
+            toast.error('Failed to add worker: ' + error.message)
         } finally {
             setLoading(false)
         }

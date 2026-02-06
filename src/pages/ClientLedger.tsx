@@ -3,6 +3,7 @@ import { supabase } from '@/utils/supabase/client'
 import { Plus, Download, FileText, IndianRupee, Trash2, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
 import ExportButton from '@/components/ExportButton'
+import toast from 'react-hot-toast'
 
 interface LedgerEntry {
     id: string
@@ -53,12 +54,12 @@ export default function ClientLedger() {
         const pay = parseFloat(paymentReceived) || 0
 
         if (bill === 0 && pay === 0) {
-            alert('Please enter either a Bill Amount or Payment Received.')
+            toast.error('Please enter either a Bill Amount or Payment Received.')
             return
         }
 
         if (!description.trim()) {
-            alert('Please enter a description (e.g., Bill No or Payment details).')
+            toast.error('Please enter a description (e.g., Bill No or Payment details).')
             return
         }
 
@@ -74,7 +75,7 @@ export default function ClientLedger() {
 
         if (error) {
             console.error('Error adding entry:', error)
-            alert('Failed to add entry')
+            toast.error('Failed to add entry')
         } else {
             // Reset form
             setDescription('')
@@ -95,7 +96,7 @@ export default function ClientLedger() {
             .eq('id', id)
 
         if (error) {
-            alert('Failed to delete')
+            toast.error('Failed to delete')
         } else {
             setEntries(prev => prev.filter(e => e.id !== id))
         }
@@ -135,7 +136,7 @@ export default function ClientLedger() {
                         'Received': entry.payment_received,
                         'Balance': entry.runningBalance
                     }))}
-                    fileName={`Client_Ledger_${format(new Date(), 'yyyy-MM-dd')}`}
+                    fileName={`Client_Ledger_${format(new Date(), 'yyyy-MM-dd')} `}
                 />
             </header>
 
@@ -242,12 +243,12 @@ export default function ClientLedger() {
                                             {entry.description}
                                         </td>
                                         <td className="px-6 py-3 text-right font-mono font-medium text-blue-600">
-                                            {entry.bill_amount > 0 ? `₹${entry.bill_amount.toLocaleString()}` : '-'}
+                                            {entry.bill_amount > 0 ? `₹${entry.bill_amount.toLocaleString()} ` : '-'}
                                         </td>
                                         <td className="px-6 py-3 text-right font-mono font-medium text-green-600">
-                                            {entry.payment_received > 0 ? `₹${entry.payment_received.toLocaleString()}` : '-'}
+                                            {entry.payment_received > 0 ? `₹${entry.payment_received.toLocaleString()} ` : '-'}
                                         </td>
-                                        <td className={`px-6 py-3 text-right font-mono font-bold bg-slate-50/50 ${entry.runningBalance >= 0 ? 'text-slate-900' : 'text-red-500'}`}>
+                                        <td className={`px - 6 py - 3 text - right font - mono font - bold bg - slate - 50 / 50 ${entry.runningBalance >= 0 ? 'text-slate-900' : 'text-red-500'} `}>
                                             ₹{entry.runningBalance.toLocaleString()}
                                         </td>
                                         <td className="px-4 py-3 text-right">

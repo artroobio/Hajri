@@ -67,7 +67,8 @@ export default function Sidebar() {
     const navItems = [
         { name: 'Site Overview', path: '/', icon: Activity },
         { name: 'Workers', path: '/workers', icon: Users },
-        { name: 'Project Info', path: '/project-details', icon: Settings }, // Updated
+        { name: 'Projects', path: '/projects', icon: Settings }, // Updated to multi-project
+
         { name: 'Daily Entry', path: '/daily-entry', icon: Calendar },
         { name: 'Estimates / BOQ', path: '/estimates', icon: FileText },
         { name: 'Bills & Payments', path: '/client-ledger', icon: IndianRupee },
@@ -87,7 +88,6 @@ export default function Sidebar() {
             <div className="px-6 mb-2 flex items-center gap-3 overflow-hidden">
                 <div className="min-w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 flex-shrink-0 overflow-hidden bg-indigo-600">
                     {brandLogo ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
                         <img src={brandLogo} alt="Logo" className="w-full h-full object-cover" />
                     ) : (
                         <Dumbbell size={18} />

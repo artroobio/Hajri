@@ -1,6 +1,7 @@
 
 import { useState } from 'react'
 import { supabase } from '@/utils/supabase/client'
+import toast from 'react-hot-toast'
 
 interface AddLeadModalProps {
     isOpen: boolean
@@ -12,7 +13,7 @@ export default function AddLeadModal({ isOpen, onClose, onSuccess }: AddLeadModa
     const [name, setName] = useState('')
     const [phone, setPhone] = useState('')
     const [source, setSource] = useState('Walk-in')
-    const [enquiryDate, setEnquiryDate] = useState(new Date().toISOString().split('T')[0])
+    const [enquiryDate, setEnquiryDate] = useState(new Date().toISOString().split('T')[0]!)
     const [notes, setNotes] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -39,14 +40,15 @@ export default function AddLeadModal({ isOpen, onClose, onSuccess }: AddLeadModa
             setName('')
             setPhone('')
             setSource('Walk-in')
-            setEnquiryDate(new Date().toISOString().split('T')[0])
+            setEnquiryDate(new Date().toISOString().split('T')[0]!)
             setNotes('')
             onSuccess()
             onClose()
-            alert('Lead Added successfully!')
-        } catch (error: any) {
-            console.error('Error adding lead:', error.message, error.details, error.hint, error)
-            alert('Failed to add lead: ' + (error.message || 'Unknown error'))
+            toast.success('Lead Added successfully!')
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            console.error('Error adding lead:', error)
+            toast.error('Failed to add lead: ' + errorMessage)
         } finally {
             setLoading(false)
         }
@@ -116,7 +118,7 @@ export default function AddLeadModal({ isOpen, onClose, onSuccess }: AddLeadModa
                                 onChange={(e) => {
                                     const d = new Date(enquiryDate)
                                     d.setDate(parseInt(e.target.value))
-                                    setEnquiryDate(d.toISOString().split('T')[0])
+                                    setEnquiryDate(d.toISOString().split('T')[0]!)
                                 }}
                                 className="w-1/3 appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all cursor-pointer"
                             >
@@ -131,7 +133,7 @@ export default function AddLeadModal({ isOpen, onClose, onSuccess }: AddLeadModa
                                 onChange={(e) => {
                                     const d = new Date(enquiryDate)
                                     d.setMonth(parseInt(e.target.value))
-                                    setEnquiryDate(d.toISOString().split('T')[0])
+                                    setEnquiryDate(d.toISOString().split('T')[0]!)
                                 }}
                                 className="w-1/3 appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all cursor-pointer"
                             >
@@ -146,7 +148,7 @@ export default function AddLeadModal({ isOpen, onClose, onSuccess }: AddLeadModa
                                 onChange={(e) => {
                                     const d = new Date(enquiryDate)
                                     d.setFullYear(parseInt(e.target.value))
-                                    setEnquiryDate(d.toISOString().split('T')[0])
+                                    setEnquiryDate(d.toISOString().split('T')[0]!)
                                 }}
                                 className="w-1/3 appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all cursor-pointer"
                             >

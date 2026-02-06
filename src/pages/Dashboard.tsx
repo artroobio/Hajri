@@ -10,10 +10,15 @@ import { Worker, AttendanceRecord } from '@/types'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import MagicEntry from '@/components/MagicEntry'
 import ExportButton from '@/components/ExportButton'
+import ProjectSelector from '@/components/ProjectSelector'
+import { useProject } from '@/context/ProjectContext'
+import toast from 'react-hot-toast'
 
 export default function Dashboard() {
+    const { selectedProjectId, setSelectedProjectId } = useProject()
     const [selectedDate, setSelectedDate] = useState(new Date())
     const [workers, setWorkers] = useState<Worker[]>([])
+
     const [attendanceMap, setAttendanceMap] = useState<Record<string, AttendanceRecord>>({})
     const [loading, setLoading] = useState(true)
     const [savingMap, setSavingMap] = useState<Record<string, boolean>>({})
@@ -57,6 +62,11 @@ export default function Dashboard() {
     const fetchData = useCallback(async () => {
         setLoading(true)
         try {
+            // Build queries with optional project filter
+            const buildQuery = (query: any) => {
+                return selectedProjectId ? query.eq('project_id', selectedProjectId) : query
+            }
+
             // Parallel Fetching for "Master Synergy" Logic
             const [
                 workersRes,
@@ -66,23 +76,23 @@ export default function Dashboard() {
                 expensesRes,
                 ledgerRes
             ] = await Promise.all([
-                // 1. Fetch Workers (Active) for List
-                supabase.from('workers').select('*').eq('status', 'active').order('full_name'),
+                // 1. Fetch Workers (Active) for List - with project filter
+                buildQuery(supabase.from('workers').select('*').eq('status', 'active')).order('full_name'),
 
-                // 2. Fetch Attendance for Selected Date (for UI)
-                supabase.from('attendance').select('*').eq('date', dateStr),
+                // 2. Fetch Attendance for Selected Date (for UI) - with project filter
+                buildQuery(supabase.from('attendance').select('*').eq('date', dateStr)),
 
-                // 3. Estimates (Budget)
-                supabase.from('estimates').select('name, estimate_items(amount)'), // Fetch all estimates
+                // 3. Estimates (Budget) - with project filter
+                buildQuery(supabase.from('estimates').select('name, estimate_items(amount)')),
 
-                // 4. All Attendance (For Global Labor Cost & Monthly Labor Cost)
-                supabase.from('attendance').select('worker_id, hajri_count, date'),
+                // 4. All Attendance (For Global Labor Cost & Monthly Labor Cost) - with project filter
+                buildQuery(supabase.from('attendance').select('worker_id, hajri_count, date')),
 
-                // 5. Total Expenses (Material Cost)
-                supabase.from('expenses').select('amount'),
+                // 5. Total Expenses (Material Cost) - with project filter
+                buildQuery(supabase.from('expenses').select('amount')),
 
-                // 6. Client Ledger (Billing & Payments)
-                supabase.from('client_ledger').select('bill_amount, payment_received')
+                // 6. Client Ledger (Billing & Payments) - with project filter
+                buildQuery(supabase.from('client_ledger').select('bill_amount, payment_received'))
             ])
 
             // -- Process Workers --
@@ -160,7 +170,7 @@ export default function Dashboard() {
             }
 
             // -- Process Expenses --
-            const materialCost = expensesRes.data ? expensesRes.data.reduce((sum, item) => sum + (item.amount || 0), 0) : 0
+            const materialCost = expensesRes.data ? expensesRes.data.reduce((sum: number, item: { amount?: number }) => sum + (item?.amount || 0), 0) : 0
 
             // -- Process Ledger --
             let totalBilled = 0
@@ -187,7 +197,7 @@ export default function Dashboard() {
         } finally {
             setLoading(false)
         }
-    }, [dateStr])
+    }, [dateStr, selectedProjectId])
 
     useEffect(() => {
         fetchData()
@@ -271,7 +281,8 @@ export default function Dashboard() {
                 date: dateStr,
                 hajri_count: newHajri,
                 kharchi_amount: newKharchi,
-                status: newStatus
+                status: newStatus,
+                project_id: selectedProjectId // Include project_id for data isolation
             }
 
             let result
@@ -305,7 +316,7 @@ export default function Dashboard() {
 
         } catch (error) {
             console.error('Error saving attendance:', error)
-            alert('Failed to save attendance! Check console for details.')
+            toast.error('Failed to save attendance! Check console for details.')
             // Revert on error (optional, but good practice)
         } finally {
             setSavingMap(prev => ({ ...prev, [workerId]: false }))
@@ -329,9 +340,10 @@ export default function Dashboard() {
                         <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Financial Health</h2>
                         <p className="text-slate-500 text-sm">Real-time financial synergy across project {financialData.activeProjectName && `(${financialData.activeProjectName})`}</p>
                     </div>
-                    <div className="text-xs font-mono text-slate-400">
-                        Global Stats
-                    </div>
+                    <ProjectSelector
+                        selectedProjectId={selectedProjectId}
+                        onProjectChange={setSelectedProjectId}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

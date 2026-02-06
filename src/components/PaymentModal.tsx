@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/utils/supabase/client'
+import toast from 'react-hot-toast'
 
 interface PaymentModalProps {
     isOpen: boolean
@@ -97,7 +98,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, memberId: ini
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!memberId) {
-            alert('Please select a member first.')
+            toast.error('Please select a member first')
             return
         }
         setLoading(true)
@@ -110,7 +111,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, memberId: ini
                 payment_date: paymentDate   // Map date picker 'paymentDate'
             }
 
-            console.log('Sending Payment:', paymentPayload)
+
 
             const { data, error } = await supabase
                 .from('payments')
@@ -126,10 +127,10 @@ export default function PaymentModal({ isOpen, onClose, onSuccess, memberId: ini
             setPaymentDate(new Date().toISOString().split('T')[0])
             onSuccess(newPaymentId) // Pass ID back
             onClose()
-            alert('Payment recorded successfully!')
+            toast.success('Payment recorded successfully!')
         } catch (error) {
             console.error('Error recording payment:', error)
-            alert('Failed to record payment: ' + (error as any).message)
+            toast.error((error as any).message || 'Failed to record payment')
         } finally {
             setLoading(false)
         }

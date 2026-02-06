@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/utils/supabase/client'
 import AddExpenseModal from '@/components/AddExpenseModal'
 import { Plus, TrendingDown, Trash2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface Expense {
     id: string
@@ -65,7 +66,7 @@ export default function Expenses() {
             calculateTotal(updated)
         } catch (error) {
             console.error('Error deleting expense:', error)
-            alert('Failed to delete expense.')
+            toast.error('Failed to delete expense.')
         }
     }
 

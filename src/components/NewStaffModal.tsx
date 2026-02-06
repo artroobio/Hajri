@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { supabase } from '@/utils/supabase/client'
 import { X } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface NewStaffModalProps {
     isOpen: boolean
@@ -54,11 +55,11 @@ export default function NewStaffModal({ isOpen, onClose, onSuccess }: NewStaffMo
             })
             onSuccess()
             onClose()
-            setTimeout(() => alert('Staff member added successfully!'), 100)
+            toast.success('Staff member added successfully!')
         } catch (error) {
             console.error('Error adding staff:', error)
             const msg = error instanceof Error ? error.message : 'Unknown error'
-            alert('Failed to add staff member: ' + msg)
+            toast.error('Failed to add staff member: ' + msg)
         } finally {
             setLoading(false)
         }

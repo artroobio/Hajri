@@ -4,6 +4,7 @@ import { Sparkles, Save, Play, Loader2, AlertCircle, Camera, X, FileText, FileSp
 import { parseEstimateCommand, ParsedEstimateItem } from '@/utils/aiHelper';
 import { extractTextFromPdf, extractTextFromDocx, extractTextFromExcel } from '@/utils/fileParsers';
 import { supabase } from '@/utils/supabase/client';
+import toast from 'react-hot-toast';
 
 interface MagicEstimateProps {
     estimateId?: string;
@@ -141,7 +142,7 @@ export default function MagicEstimate({ estimateId, onSuccess }: MagicEstimatePr
             setInput('');
             setPreviewData([]);
             onSuccess(targetEstimateId);
-            alert(`Successfully added ${itemsToInsert.length} items!`);
+            toast.success(`Successfully added ${itemsToInsert.length} items!`);
 
         } catch (err: any) {
             console.error(err);

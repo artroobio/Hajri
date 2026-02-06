@@ -7,7 +7,7 @@ import { Calendar as CalendarIcon, Loader2, Save, ChevronLeft, ChevronRight } fr
 import { format, addDays, subDays, isSameDay } from 'date-fns'
 
 export default function DailyEntry() {
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]!)
     const [workers, setWorkers] = useState<Worker[]>([])
     const [attendanceMap, setAttendanceMap] = useState<Record<string, AttendanceRecord>>({})
     const [loading, setLoading] = useState(true)
@@ -157,7 +157,7 @@ export default function DailyEntry() {
                 [worker.id]: result.data as AttendanceRecord
             }))
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error saving attendance:', error)
             // Revert on error? Or just show alert
         } finally {
@@ -242,7 +242,7 @@ export default function DailyEntry() {
                 [worker.id]: result.data as AttendanceRecord
             }))
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error saving kharchi:', error)
         } finally {
             setSavingMap(prev => ({ ...prev, [worker.id]: false }))

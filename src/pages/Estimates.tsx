@@ -3,7 +3,8 @@ import { supabase } from '@/utils/supabase/client'
 import * as XLSX from 'xlsx'
 import { Upload, FileSpreadsheet, ArrowRight, Save, CheckCircle, ChevronDown, ChevronRight, AlertCircle, FileText, X, Plus, Trash2, Search } from 'lucide-react'
 import { Estimate, EstimateItem } from '@/types'
-import MagicEstimate from '@/components/MagicEstimate';
+import MagicEstimate from '@/components/MagicEstimate'
+import toast from 'react-hot-toast'
 
 export default function Estimates() {
     // --- State ---
@@ -67,7 +68,7 @@ export default function Estimates() {
 
         } catch (error: any) {
             console.error(error)
-            alert('Failed to delete estimate')
+            toast.error('Failed to delete estimate')
         } finally {
             setLoading(false)
         }
@@ -100,7 +101,7 @@ export default function Estimates() {
             fetchItems(selectedEstimateId)
             // alert('Item added successfully!') 
         } catch (error: any) {
-            alert('Error adding item: ' + error.message)
+            toast.error('Error adding item: ' + error.message)
         } finally {
             setLoading(false)
         }
@@ -123,7 +124,7 @@ export default function Estimates() {
 
         } catch (error: any) {
             console.error(error)
-            alert('Failed to create estimate')
+            toast.error('Failed to create estimate')
         } finally {
             setLoading(false)
         }

@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import StatusDropdown from '@/components/attendance/StatusDropdown'
 import HajriStepper from '@/components/attendance/HajriStepper'
+import toast from 'react-hot-toast'
 
 export default function Workers() {
     const [workers, setWorkers] = useState<Worker[]>([])
@@ -53,32 +54,17 @@ export default function Workers() {
             setAttendanceMap(map)
 
             // --- Process Monthly Stats ---
-            // 1. Fetch ALL attendance for aggregation
-            // We do a separate fetch here to avoid breaking the existing logic which relies on exact date match for the UI
-            // Optimally this could be requested in the Promise.all above, but for clarity/safety adding it here or modifying above.
-            // Let's modify the Promise.all logic in next iteration if needed, but here:
-            const { data: allAttendance } = await supabase
-                .from('attendance')
-                .select('worker_id, hajri_count, date')
+            // Use database-side aggregation for performance (scales to millions of records)
+            const { data: monthlyStatsData, error: statsError } = await supabase
+                .rpc('get_monthly_labor_stats')
 
-            if (allAttendance) {
-                const wageMap = new Map((workersRes.data as unknown as Worker[]).map(w => [w.id, w.daily_wage]))
-                const statsMap: Record<string, number> = {}
-
-                allAttendance.forEach((record: any) => {
-                    const monthKey = format(new Date(record.date), 'MMMM yyyy')
-                    const wage = wageMap.get(record.worker_id) || 0
-                    const cost = (record.hajri_count || 0) * wage
-
-                    statsMap[monthKey] = (statsMap[monthKey] || 0) + cost
-                })
-
-                // Convert to array and sort (Newest First)
-                const statsArray = Object.entries(statsMap)
-                    .map(([month, amount]) => ({ month, amount }))
-                    .sort((a, b) => new Date(b.month).getTime() - new Date(a.month).getTime())
-
-                setMonthlyStats(statsArray)
+            if (statsError) {
+                console.error('Error fetching monthly stats:', statsError)
+                // Fallback to empty array if function fails
+                setMonthlyStats([])
+            } else {
+                // Data already aggregated and sorted by database
+                setMonthlyStats(monthlyStatsData || [])
             }
 
         } catch (error) {
@@ -118,7 +104,7 @@ export default function Workers() {
             hajri_count: newHajri,
             kharchi_amount: newKharchi,
             status: newStatus,
-            id: currentRecord?.id || `temp-${workerId}`
+            id: currentRecord?.id || `temp - ${workerId} `
         } as AttendanceRecord
 
         setAttendanceMap(prev => ({ ...prev, [workerId]: mergedRecord }))
@@ -154,9 +140,12 @@ export default function Workers() {
                     const existingMonthIndex = newStats.findIndex(s => s.month === currentMonthKey)
 
                     if (existingMonthIndex >= 0) {
-                        newStats[existingMonthIndex] = {
-                            ...newStats[existingMonthIndex],
-                            amount: newStats[existingMonthIndex].amount + costDeference
+                        const existingMonth = newStats[existingMonthIndex]
+                        if (existingMonth) {
+                            newStats[existingMonthIndex] = {
+                                month: existingMonth.month,
+                                amount: existingMonth.amount + costDeference
+                            }
                         }
                     } else {
                         // If month doesn't exist yet (first entry for a new month), add it
@@ -167,7 +156,7 @@ export default function Workers() {
             }
         } catch (error) {
             console.error('Error saving attendance:', error)
-            alert('Failed to save attendance')
+            toast.error('Failed to save attendance')
         } finally {
             setSavingMap(prev => ({ ...prev, [workerId]: false }))
         }
@@ -190,8 +179,9 @@ export default function Workers() {
 
             setWorkers(prev => prev.filter(w => w.id !== workerToDelete.id))
             setWorkerToDelete(null)
-        } catch (err: any) {
-            alert('Error deleting: ' + err.message)
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Error deleting worker'
+            toast.error(message)
         } finally {
             setIsDeleteLoading(false)
         }
@@ -234,7 +224,7 @@ export default function Workers() {
                                 Kharchi: record?.kharchi_amount ?? 0
                             }
                         })}
-                        fileName={`Workers_List_${dateStr}`}
+                        fileName={`Workers_List_${dateStr} `}
                     />
                     <button
                         onClick={() => setIsAddModalOpen(true)}
@@ -284,7 +274,7 @@ export default function Workers() {
                                                             {worker.full_name.charAt(0).toUpperCase()}
                                                         </div>
                                                         <div>
-                                                            <Link to={`/workers/${worker.id}`} className="font-medium text-slate-900 hover:text-blue-600 hover:underline">
+                                                            <Link to={`/ workers / ${worker.id} `} className="font-medium text-slate-900 hover:text-blue-600 hover:underline">
                                                                 {worker.full_name}
                                                             </Link>
                                                             <div className="text-xs text-slate-500 flex items-center gap-1">
@@ -294,10 +284,11 @@ export default function Workers() {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                                    <span className={`inline - flex items - center px - 2.5 py - 0.5 rounded - full text - xs font - medium 
                                                     ${worker.skill_type === 'Mason' ? 'bg-orange-100 text-orange-800' :
                                                             worker.skill_type === 'Laborer' ? 'bg-blue-100 text-blue-800' :
-                                                                'bg-slate-100 text-slate-800'}`}>
+                                                                'bg-slate-100 text-slate-800'
+                                                        } `}>
                                                         {worker.skill_type}
                                                     </span>
                                                 </td>

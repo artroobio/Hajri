@@ -23,7 +23,7 @@ export default function ActivityHeatmap({ memberId }: ActivityHeatmapProps) {
 
             if (data) {
                 const counts: Record<string, number> = {}
-                data.forEach((record: any) => {
+                data.forEach((record: { date: string }) => {
                     const d = record.date // YYYY-MM-DD
                     counts[d] = (counts[d] || 0) + 1
                 })
@@ -36,15 +36,16 @@ export default function ActivityHeatmap({ memberId }: ActivityHeatmapProps) {
                 for (let i = 0; i < 365; i++) {
                     const d = new Date(today)
                     d.setDate(d.getDate() - i)
-                    const dateStr = d.toISOString().split('T')[0]
-                    if (counts[dateStr]) {
+                    const dateStr = d.toISOString().split('T')[0]!
+                    const count = counts[dateStr]
+                    if (count && count > 0) {
                         currentStreak++
-                    } else if (i === 0 && !counts[dateStr]) {
+                    } else if (i === 0 && !count) {
                         // If today is missed, check yesterday before breaking
                         continue
                     } else {
                         if (i > 1) break // allow 1 day gap for today
-                        if (i === 1 && !counts[dateStr]) break
+                        if (i === 1 && !count) break
                     }
                 }
                 setStreak(currentStreak)
@@ -60,7 +61,7 @@ export default function ActivityHeatmap({ memberId }: ActivityHeatmapProps) {
         for (let i = 364; i >= 0; i--) {
             const d = new Date(today)
             d.setDate(d.getDate() - i)
-            const dateStr = d.toISOString().split('T')[0]
+            const dateStr = d.toISOString().split('T')[0]!
             days.push({
                 date: dateStr,
                 count: heatmapData[dateStr] || 0,

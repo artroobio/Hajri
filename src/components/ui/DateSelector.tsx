@@ -40,7 +40,7 @@ export default function DateSelector({ label, value, onChange, yearRange = 'past
 
         if (d && m && y) {
             const date = new Date(Date.UTC(parseInt(y), parseInt(m), parseInt(d)))
-            onChange(date.toISOString().split('T')[0])
+            onChange(date.toISOString().split('T')[0]!)
         }
     }
 

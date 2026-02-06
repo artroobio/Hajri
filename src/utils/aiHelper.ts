@@ -1,4 +1,4 @@
-const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+// OpenAI API helper functions - API key is managed server-side by Cloudflare Worker
 
 export interface ParsedAttendance {
     worker_name: string;
@@ -23,16 +23,12 @@ export interface ParsedEstimateItem {
 }
 
 export async function parseWorkerCommand(text: string): Promise<ParsedAttendance[]> {
-    if (!apiKey) {
-        throw new Error("Missing API Key. Please add VITE_OPENAI_API_KEY to your .env file.");
-    }
-
     try {
         const response = await fetch('/api/openai/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
+                // No Authorization header - Cloudflare Worker will add it
             },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
@@ -77,23 +73,20 @@ export async function parseWorkerCommand(text: string): Promise<ParsedAttendance
             throw new Error("AI returned invalid JSON format.");
         }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error calling OpenAI:", error);
-        throw new Error(error.message || "Connection to OpenAI failed.");
+        const message = error instanceof Error ? error.message : "Connection to OpenAI failed.";
+        throw new Error(message);
     }
 }
 
 export async function parseExpenseCommand(text: string): Promise<ParsedExpense[]> {
-    if (!apiKey) {
-        throw new Error("Missing API Key. Please add VITE_OPENAI_API_KEY to your .env file.");
-    }
-
     try {
         const response = await fetch('/api/openai/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
+                // No Authorization header - Cloudflare Worker will add it
             },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
@@ -137,23 +130,20 @@ export async function parseExpenseCommand(text: string): Promise<ParsedExpense[]
             throw new Error("AI returned invalid JSON format.");
         }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error calling OpenAI:", error);
-        throw new Error(error.message || "Connection to OpenAI failed.");
+        const message = error instanceof Error ? error.message : "Connection to OpenAI failed.";
+        throw new Error(message);
     }
 }
 
 export async function parseEstimateCommand(text: string, imageBase64?: string): Promise<ParsedEstimateItem[]> {
-    if (!apiKey) {
-        throw new Error("Missing API Key. Please add VITE_OPENAI_API_KEY to your .env file.");
-    }
-
     try {
         const response = await fetch('/api/openai/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
+                // No Authorization header - Cloudflare Worker will add it
             },
             body: JSON.stringify({
                 model: imageBase64 ? "gpt-4o" : "gpt-3.5-turbo",
@@ -201,8 +191,9 @@ export async function parseEstimateCommand(text: string, imageBase64?: string): 
             throw new Error("AI returned invalid JSON format.");
         }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error calling OpenAI:", error);
-        throw new Error(error.message || "Connection to OpenAI failed.");
+        const message = error instanceof Error ? error.message : "Connection to OpenAI failed.";
+        throw new Error(message);
     }
 }

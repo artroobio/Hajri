@@ -71,8 +71,11 @@ export default function ProjectMetadata({ project, onSave }: ProjectMetadataProp
 
     const updateTeamMember = (index: number, field: 'name' | 'role', value: string) => {
         const current = [...(formData.project_team || [])]
-        current[index] = { ...current[index], [field]: value }
-        handleChange('project_team', current)
+        const existingMember = current[index]
+        if (existingMember) {
+            current[index] = { ...existingMember, [field]: value }
+            handleChange('project_team', current)
+        }
     }
 
     const handleSubmit = async () => {

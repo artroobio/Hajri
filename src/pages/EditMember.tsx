@@ -3,6 +3,7 @@ import { supabase } from '@/utils/supabase/client'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Worker } from '@/types'
 import { Save, User, Phone, MapPin, CreditCard, Award, FileText } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 export default function EditMember() {
     const { id } = useParams<{ id: string }>()
@@ -25,7 +26,7 @@ export default function EditMember() {
                 setFormData(data)
             } catch (error) {
                 console.error('Error fetching worker:', error)
-                alert('Failed to load worker data.')
+                toast.error('Failed to load worker data.')
                 navigate('/workers')
             } finally {
                 setLoading(false)
@@ -58,11 +59,11 @@ export default function EditMember() {
 
             if (error) throw error
 
-            alert('Worker Profile Updated')
+            toast.success('Worker Profile Updated')
             navigate(`/workers/${id}`)
         } catch (error: any) {
             console.error('Error updating worker:', error)
-            alert('Failed to update: ' + error.message)
+            toast.error('Failed to update: ' + error.message)
         } finally {
             setSaving(false)
         }

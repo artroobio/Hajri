@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { supabase } from '@/utils/supabase/client'
 import { Plus, X, Upload } from 'lucide-react'
-
+import toast from 'react-hot-toast'
 import { createPortal } from 'react-dom'
 
 interface AddWorkerModalProps {
@@ -94,7 +94,7 @@ export default function AddWorkerModal({ isOpen, onClose, onSuccess }: AddWorker
             onClose()
         } catch (error: any) {
             console.error('Error adding worker:', error)
-            alert('Failed to add worker: ' + error.message)
+            toast.error('Failed to add worker: ' + error.message)
         } finally {
             setLoading(false)
         }
