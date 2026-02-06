@@ -76,8 +76,8 @@ export default function Dashboard() {
                 expensesRes,
                 ledgerRes
             ] = await Promise.all([
-                // 1. Fetch Workers (Active) for List - with project filter
-                buildQuery(supabase.from('workers').select('*').eq('status', 'active')).order('full_name'),
+                // 1. Fetch Workers (Active) for List - Global (not project specific)
+                supabase.from('workers').select('*').eq('status', 'active').order('full_name'),
 
                 // 2. Fetch Attendance for Selected Date (for UI) - with project filter
                 buildQuery(supabase.from('attendance').select('*').eq('date', dateStr)),
@@ -332,8 +332,7 @@ export default function Dashboard() {
         <div className="space-y-8 pb-20">
             {/* --- MASTER FINANCIAL SYNERGY DASHBOARD (2x2 Grid) --- */}
             <div>
-                {/* AI MAGIC ENTRY */}
-                <MagicEntry workers={workers} onSuccess={fetchData} />
+                <MagicEntry workers={workers} onSuccess={fetchData} projectId={selectedProjectId} />
 
                 <div className="flex items-center justify-between mb-4">
                     <div>

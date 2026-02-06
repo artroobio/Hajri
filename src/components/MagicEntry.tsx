@@ -9,11 +9,12 @@ import toast from 'react-hot-toast';
 interface MagicEntryProps {
     workers: Worker[];
     onSuccess: () => void;
+    projectId: string | null;
 }
 
 type TabMode = 'Attendance' | 'Expenses';
 
-export default function MagicEntry({ workers, onSuccess }: MagicEntryProps) {
+export default function MagicEntry({ workers, onSuccess, projectId }: MagicEntryProps) {
     const [activeTab, setActiveTab] = useState<TabMode>('Attendance');
     const [input, setInput] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
@@ -98,7 +99,8 @@ export default function MagicEntry({ workers, onSuccess }: MagicEntryProps) {
                         hajri_count: hajriCount,
                         status: record.status,
                         shift: record.shift,
-                        notes: record.notes
+                        notes: record.notes,
+                        project_id: projectId // Ensure attendance is linked to project
                     };
 
                     const { data: existing } = await supabase
