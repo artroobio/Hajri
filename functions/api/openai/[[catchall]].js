@@ -2,8 +2,8 @@ export async function onRequest(context) {
     const { request, params, env } = context;
     const path = params.catchall; // e.g., ["chat", "completions"]
 
-    // Get API key from Cloudflare environment variables
-    const apiKey = env.OPENAI_API_KEY;
+    // Get API key from Cloudflare environment variables - support both names
+    const apiKey = env.OPENAI_API_KEY || env.VITE_OPENAI_API_KEY;
 
     if (!apiKey) {
         return new Response(JSON.stringify({
